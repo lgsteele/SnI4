@@ -52,11 +52,23 @@ zeeman,zeeman_signal =\
 
 
 # T1
-def T1_fit(M,F,T1,a1,a2):
-    T1_func = 
+def T1_fit(t,M0,c,a1,a2,T1a,T1b):
+    T1_func = M0*(1-c*(a1*np.exp(-(t/T1a)\
+                  + a2*np.exp(-t/T1b))))
+    return T1_func
+T1_test_fit = T1_fit(T1,11,.2,1,1,.0001,.001)
+p0 = np.array([11,.2,1,1,.0001,.001])
+coeffs, matcov = curve_fit(T1_fit,T1,T1_signal,p0)
+T1_fit = T1_fit(T1,coeffs[0],\
+                coeffs[1], coeffs[2],\
+                coeffs[3],coeffs[4],\
+                coeffs[5])
+print coeffs
 try:    
-    plt.semilogx(T1*(10**6),T1_signal,'x')
-    plt.title('T1 Nutation of tin(IV) iodide')
+    plt.semilogx(T1,T1_signal,'x')
+##    plt.semilogx(T1,T1_test_fit,'g')
+    plt.semilogx(T1,T1_fit,'k')
+    plt.title('Inversion recovery (T1) of tin(IV) iodide')
     plt.xlabel('Pulse length (us)')
     plt.ylabel('Signal (AU)')
     plt.show()
